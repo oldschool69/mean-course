@@ -34,8 +34,9 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
-  onAddPost(form: NgForm) {
+  onSavePost(form: NgForm) {
 
+    console.log('*** onSavePost called!!!');
     if (form.invalid) {
       return;
     }
@@ -44,7 +45,15 @@ export class PostCreateComponent implements OnInit {
       title: form.value.title,
       content: form.value.content
     };
-    this.postsService.addPost(post.title, post.content);
+
+    if (this.mode === 'create') {
+      console.log('*** ADD POST');
+      this.postsService.addPost(form.value.title, form.value.content);
+    } else {
+      console.log('*** UPDATE POST');
+      this.postsService.updatePost(this.postId, form.value.title, form.value.content);
+    }
+
     form.resetForm();
   }
 }

@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   );
   res.setHeader(
     'Access-Control-Allow-Methods',
-    "GET, POST, PATCH, DELETE, OPTIONS"
+    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
   next();
 });
@@ -51,6 +51,20 @@ app.get('/api/posts', (req, res, next) => {
         posts: documents
       })
     });
+});
+
+app.put('/api/posts/:id', (req, res, next) => {
+  const post = {
+    title: req.body.title,
+    content: req.body.content
+  };
+
+  Post.updateOne({_id: req.params.id}, post).then((result) => {
+    res.status(200).json({message: 'Update successful!'});
+  }).catch(reason => {
+    console.log('*** FROM SERVER: reason ', reason);
+    res.status(500).json({reason});
+  });
 });
 
 app.delete('/api/posts/:id', (req, res, next) => {
