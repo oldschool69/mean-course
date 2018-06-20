@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-mongoose.connect('mongodb+srv://oliveira:ZlyxJc3DVnB4WQip@cluster0-ravys.mongodb.net/mean-course?retryWrites=true')
+mongoose.connect('mongodb+srv://oliveira:cox69leo@cluster0-ravys.mongodb.net/test?retryWrites=true')
   .then(() => {
     console.log('Connected to the database');
   }).catch((e) => {
@@ -51,6 +51,16 @@ app.get('/api/posts', (req, res, next) => {
         posts: documents
       })
     });
+});
+
+app.get('/api/posts/:id', (req, res, next) => {
+  Post.findById({_id: req.params.id}).then(post => {
+    if(post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).json({message: 'Post not found'});
+    }
+  });
 });
 
 app.put('/api/posts/:id', (req, res, next) => {
