@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { Post } from '../post.model';
-import { NgForm } from '@angular/forms';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { PostsService } from '../posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -15,6 +15,7 @@ export class PostCreateComponent implements OnInit {
   enteredTitle = '';
   post: Post;
   isLoading = false;
+  form: FormGroup;
   private mode = 'create';
   private postId: string;
 
@@ -22,6 +23,12 @@ export class PostCreateComponent implements OnInit {
   constructor(public postsService: PostsService, public route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.form = new FormGroup({
+      title: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)]
+      }),
+      content: new FormControl(null, {validators: [Validators.required]})
+    });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
         this.mode = 'edit';
@@ -30,6 +37,10 @@ export class PostCreateComponent implements OnInit {
         this.postsService.getPost(this.postId).subscribe(postData => {
           this.isLoading = false;
           this.post = {id: postData._id, title: postData.title, content: postData.content};
+          this.form.setValue({
+            title: this.post.title,
+            content: this.post.content
+          });
         }, (error: HttpErrorResponse) => {
            console.error('***Error received from server: ', error);
         });
@@ -42,27 +53,27 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
-  onSavePost(form: NgForm) {
+  onSavePost() {
 
     console.log('*** onSavePost called!!!');
-    if (form.invalid) {
+    if (this.form.invalid) {
       return;
     }
     this.isLoading = true;
-    const post: Post = {
-      id: null,
-      title: form.value.title,
-      content: form.value.content
-    };
+    // const post: Post = {
+    //   id: null,
+    //   title: this.form.value.title,
+    //   content: this.form.value.content
+    // };
 
     if (this.mode === 'create') {
       console.log('*** ADD POST');
-      this.postsService.addPost(form.value.title, form.value.content);
+      this.postsService.addPost(this.form.value.title, this.form.value.content);
     } else {
       console.log('*** UPDATE POST');
-      this.postsService.updatePost(this.postId, form.value.title, form.value.content);
+      this.postsService.updatePost(this.postId, this.form.value.title, this.form.value.content);
     }
 
-    form.resetForm();
+    this.form.reset();
   }
 }
