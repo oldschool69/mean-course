@@ -42,7 +42,12 @@ export class PostCreateComponent implements OnInit {
         this.isLoading = true;
         this.postsService.getPost(this.postId).subscribe(postData => {
           this.isLoading = false;
-          this.post = {id: postData._id, title: postData.title, content: postData.content};
+          this.post = {
+            id: postData._id,
+            title: postData.title,
+            content: postData.content,
+            imagePath: null
+          };
           this.form.setValue({
             title: this.post.title,
             content: this.post.content
@@ -53,7 +58,7 @@ export class PostCreateComponent implements OnInit {
       } else {
         this.mode = 'create';
         this.postId = null;
-        const tmp = { id: null, title: '', content: ''};
+        const tmp = { id: null, title: '', content: '', imagePath: null};
         this.post = tmp;
       }
     });
@@ -74,7 +79,11 @@ export class PostCreateComponent implements OnInit {
 
     if (this.mode === 'create') {
       console.log('*** ADD POST');
-      this.postsService.addPost(this.form.value.title, this.form.value.content);
+      this.postsService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     } else {
       console.log('*** UPDATE POST');
       this.postsService.updatePost(this.postId, this.form.value.title, this.form.value.content);
