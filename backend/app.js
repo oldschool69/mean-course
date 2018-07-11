@@ -7,12 +7,20 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-mongoose.connect('mongodb+srv://oliveira:cox69leo@cluster0-ravys.mongodb.net/test?retryWrites=true')
+// mongoose.connect('mongodb+srv://oliveira:cox69leo@cluster0-ravys.mongodb.net/test?retryWrites=true')
+//   .then(() => {
+//     console.log('Connected to the database');
+//   }).catch((e) => {
+//     console.log('Connection failed: ', e.message);
+//   });
+
+mongoose.connect('mongodb://localhost/postdb')
   .then(() => {
     console.log('Connected to the database');
   }).catch((e) => {
     console.log('Connection failed: ', e.message);
   });
+
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
