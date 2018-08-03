@@ -8,7 +8,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-mongoose.connect('mongodb+srv://oliveira:cox69leo@cluster0-ravys.mongodb.net/test')
+mongoose.connect('mongodb+srv://oliveira:'
+  + process.env.MONGO_ATLAS_PW
+  + '@cluster0-ravys.mongodb.net/test')
   .then(() => {
     console.log('Connected to the database');
   }).catch((e) => {
