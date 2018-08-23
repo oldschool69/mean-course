@@ -1,6 +1,10 @@
 
 const Post = require('../models/post');
 
+const Rx = require('rxjs');
+const {concatMap, flatMap, map, take, toArray, filter, tap} = require('rxjs/operators');
+const fs = require('fs');
+
 exports.createPost = (req, res, next) => {
 
   const url = req.protocol + '://' + req.get('host');
@@ -28,6 +32,9 @@ exports.createPost = (req, res, next) => {
 };
 
 exports.getPosts = (req, res, next) => {
+
+  playingWithObserver();
+
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
   const postQuery = Post.find();
@@ -57,6 +64,65 @@ exports.getPosts = (req, res, next) => {
       });
     });
 };
+
+playingWithObserver = () => {
+
+  // const students1 = [
+  //   {id: 1, name: "Carlos", age: 15},
+  //   {id: 2, name: "Jose", age: 13},
+  //   {id: 3, name: "Maria", age: 12},
+  // ];
+
+  // const students2 = [
+  //   {id: 4, name: "Jonas", age: 15},
+  //   {id: 5, name: "Mané", age: 13},
+  //   {id: 6, name: "Hendrix", age: 12},
+  // ];
+
+  // const classes = [
+  //   {
+  //     id: 1,
+  //     description: "Geography",
+  //     students: students1,
+  //   },
+  //   {
+  //     id: 2,
+  //     description: "Math",
+  //     students: students2,
+  //   },
+  // ];
+
+  const classes = JSON.parse(
+    fs.readFileSync('C:\\Users\\flavi\\Documents\\mean\\mean-course\\backend\\mocks\\classes.json'));
+
+  console.log('***classes: ', classes);
+
+  const obs$ = Rx.of(classes);
+
+
+  obs$
+    .pipe(
+      tap(classes => console.log("***Step 1:\n", classes)),
+      flatMap(classes => classes),
+      // take(1),
+      tap(_class => console.log("***Step 2:\n", _class)),
+      map(_class => _class.students),
+      tap(students => console.log("***Step 3:\n", students)),
+      flatMap(student => student),
+      // take(1),
+      tap(student => console.log("***Step 4:\n", student)),
+      map(student => student.name),
+      //take(3),
+      //filter(name => name === "Carlos"),
+      toArray()
+
+    )
+    .subscribe(names => console.log(names));
+
+
+
+}
+
 
 exports.getPostById = (req, res, next) => {
   Post.findById({_id: req.params.id}).then(post => {
